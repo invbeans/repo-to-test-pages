@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Список дел</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+    <style>
+        body {
+            background: #fff;
+            color: #333;
+            font-family: Lato, sans-serif;
+        }
+        .container {
+            display: block;
+            width: 400px;
+            margin: 100px auto 0;
+        }
+        ul {
+            margin: 0;
+            padding: 0;
+        }
+        li * {
+            float: left;
+        }
+        li,
+        h3 {
+            clear: both;
+            list-style: none;
+        }
+        button {
+            background: none;
+            border: 0px;
+            color: #888;
+            font-size: 15px;
+            width: 60px;
+            margin: 10px 0 0;
+        }
+        h3,
+        label[for='new-task'] {
+            color: #333;
+            font-weight: 700;
+            font-size: 15px;
+            border-bottom: 2px solid #333;
+            padding: 30px 0 10px;
+            margin: 0;
+            text-transform: uppercase;
+        }
+        input[type="text"] {
+            margin: 0;
+            font-size: 18px;
+            line-height: 18px;
+            height: 18px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            background: #fff;
+            border-radius: 6px;
+            font-family: Lato, sans-serif;
+            color: #888;
+            float: left;
+            width: 318px;
+        }
+        input[type="text"]:focus {
+            color: #333;
+        }
+        label[for='new-task'] {
+            display: block;
+            margin: 0 0 20px;
+        }
+        li {
+            overflow: hidden;
+            padding: 20px 0;
+            border-bottom: 1px solid #eee;
+        }
+        li>label {
+            font-size: 18px;
+            line-height: 40px;
+            width: 237px;
+            padding: 0 0 0 11px;
+        }
+        .completed {
+            color: #a7a6a6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="add-div">
+            <label for="new-task">Добавить задание</label>
+            <input type="text" id="new-task">
+            <button>Добавить</button>
+        </div>
+        <h3>Список дел</h3>
+        <ul id="incomplete">
+            <li>
+                <input type="checkbox">
+                <label>Купить молоко</label>
+                <button class="delete">Удалить</button>
+            </li>
+            <li>
+                <input type="checkbox">
+                <label>Полить кактус</label>
+                <button class="delete">Удалить</button>
+            </li>
+        </ul>
+    </div>
+    <script>
+        var taskInput = document.getElementById("new-task");
+        var addButton = document.getElementsByTagName("button")[0];
+        var incompleteHolder = document.getElementById("incomplete")
+
+        // создание нового элемента списка
+        var createNewTaskElement = function (taskString) { 
+            var listItem = document.createElement("li");
+            var checkBox = document.createElement("input");
+            var label = document.createElement("label");
+            var deleteButton = document.createElement("button");
+            checkBox.type = "checkBox";
+            deleteButton.innerText = "Удалить";
+            deleteButton.className = "delete";
+            label.innerText = taskString;
+            listItem.appendChild(checkBox);
+            listItem.appendChild(label);
+            listItem.appendChild(deleteButton);
+            return listItem;
+        }
+
+
+        // добавление нового задания
+        var addTask = function () {
+            var listItem = createNewTaskElement(taskInput.value);
+            // добавление listItem к incompleteHolder
+            incompleteHolder.appendChild(listItem);
+            bindTaskEvents(listItem, checkTask);
+            taskInput.value = "";
+        }
+
+        // привязка события клика к кнопке добавления задания
+        addButton.addEventListener("click", addTask);
+
+        // изменение внешнего вида дела после клика по чекбоксу
+        var checkTask = function () {
+            var labelElem = this.parentNode;
+            if(labelElem.classList.contains('completed')){
+                labelElem.classList.remove('completed')
+            } else {
+                labelElem.classList.add('completed')
+            }
+        }
+
+        var deleteTask = function () {
+            var listItem = this.parentNode;
+            var ul = listItem.parentNode;
+            ul.removeChild(listItem);
+        }
+
+        //привязка событий к элементу списка
+        var bindTaskEvents = function (taskListItem, checkFunction) {
+            // нахождение детей элемента списка
+            var checkBox = taskListItem.querySelector('input[type="checkbox"]');
+            var deleteButton = taskListItem.querySelector("button.delete");
+            var label = taskListItem.querySelector("label")
+            // привязка deleteTask к кнопке удаления
+            deleteButton.onclick = deleteTask;
+            // привязка checkTask к чекбоксу
+            checkBox.onchange = checkFunction;
+        }
+
+        // цикл по элементам списка дел
+        for (var i = 0; i < incompleteHolder.children.length; i++) {
+            // привязка функций к элементам списка	
+            bindTaskEvents(incompleteHolder.children[i], checkTask);
+        }
+    </script>
+</body>
+</html>
